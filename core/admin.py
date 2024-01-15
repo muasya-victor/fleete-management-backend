@@ -1,15 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from core.models import   User, VehicleService
+from core.models import   User, VehicleService , ServiceType ,SubService, VehiclePart , Vehicle 
+
+
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         (
             "Other Fields",
             {
                 "fields": (
+                    "phone_code",
                     "phone_number",
-                    "company"
+                    "user_type",
                    
                 )
             },
@@ -20,8 +23,11 @@ class CustomUserAdmin(UserAdmin):
             "Other Fields",
             {
                 "fields": (
+                    "phone_code",
                     "phone_number",
-                    "company"
+                    "user_type",
+                    "email",
+                   
 
                 )
             },
@@ -29,5 +35,8 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(User, CustomUserAdmin)
-
 admin.site.register(VehicleService)
+admin.site.register(ServiceType)
+admin.site.register(Vehicle)
+admin.site.register(VehiclePart)
+admin.site.register(SubService)
