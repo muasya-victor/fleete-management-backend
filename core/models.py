@@ -119,12 +119,7 @@ class SubService(models.Model):
     def __str__(self):
         return f"{self.service_type} - {self.subservice_name}"
 
-    def save(self, *args, **kwargs):
-        # Dynamically set choices based on available ServiceType instances
-        service_types = ServiceType.objects.all()
-        choices = [(st.service_type, st.service_type) for st in service_types]
-        self._meta.get_field('subservice_name').choices = choices
-        super().save(*args, **kwargs)
+  
 
 class VehiclePart(models.Model):
     name = models.CharField(max_length=255)
