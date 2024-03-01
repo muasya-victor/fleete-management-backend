@@ -1,5 +1,5 @@
 import calendar
-
+from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
@@ -39,10 +39,9 @@ class UserViewSet(viewsets.ModelViewSet):
     
 
     def get_queryset(self):
-        permission_classes = [permissions.IsAuthenticated]
         user = self.request.user
         if not user.is_superuser:
-            user = User.objects.filter(user=user.id)
+            user = User.objects.filter(user=user)
         else:
             user = User.objects.all()
         return user

@@ -21,8 +21,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'phone_code', 'phone_number', 'username', 
+        fields = ['id', 'email', 'phone_code', 'phone_number', 'username', 'password', 
                    'user_type']
+        write_only_fields = ['password']
     
         
 class ServiceTypeSerializer(serializers.ModelSerializer):

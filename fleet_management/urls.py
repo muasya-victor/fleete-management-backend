@@ -23,7 +23,7 @@ from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Keja Pro",
+        title="fleet management",
         default_version='v1',
         description="This is a django rest api ",
         terms_of_service="https://www.google.com/policies/terms/",

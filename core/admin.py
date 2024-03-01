@@ -40,3 +40,4 @@ admin.site.register(ServiceType)
 admin.site.register(Vehicle)
 admin.site.register(VehiclePart)
 admin.site.register(SubService)
+
