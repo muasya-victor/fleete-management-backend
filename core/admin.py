@@ -10,8 +10,8 @@ class CustomUserAdmin(UserAdmin):
             "Other Fields",
             {
                 "fields": (
-                    "phone_code",
-                    "phone_number",
+                    "user_phone_code",
+                    "user_phone_number",
                     "user_type",
                    
                 )
@@ -23,10 +23,10 @@ class CustomUserAdmin(UserAdmin):
             "Other Fields",
             {
                 "fields": (
-                    "phone_code",
-                    "phone_number",
+                    "user_phone_code",
+                    "user_phone_number",
                     "user_type",
-                    "email",
+                    "user_email",
                    
 
                 )
