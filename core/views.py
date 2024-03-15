@@ -17,8 +17,9 @@ from django.conf import settings
 import requests
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from core.models import( User, VehicleService, ServiceType, SubService)
-from core.serializers import ( CustomTokenObtainPairSerializer, UserSerializer,SubServiceSerializer,ServiceTypeSerializer)
+from core.models import( User, VehicleService, ServiceType, SubService, VehiclePart)
+from core.serializers import ( CustomTokenObtainPairSerializer, UserSerializer,SubServiceSerializer,
+                              ServiceTypeSerializer, VehiclePartSerializer)
 
 class CustomObtainTokenPairView(TokenObtainPairView):
     permission_classes = (AllowAny,)
@@ -56,3 +57,19 @@ class SubServiceViewSet(viewsets.ModelViewSet):
     serializer_class = SubServiceSerializer
     queryset = SubService.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+class VehiclePartViewSet(viewsets.ModelViewSet):
+    serializer_class =VehiclePartSerializer
+    queryset = VehiclePart.objects.all()
+    permission_classes= [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        # Filter the queryset based on the logged-in user
+        user = self.request.user
+        if user.user_type == "mechanic" and not user.is_superuser:
+            return VehiclePart.objects.filter(mechanic=user)
+        elif user.is_superuser:
+            return VehiclePart.objects.all()
+        else:
+            # Return an empty queryset for non-mechanics who are not superusers
+            return VehiclePart.objects.none()
