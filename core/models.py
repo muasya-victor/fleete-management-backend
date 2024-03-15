@@ -28,16 +28,16 @@ class UtilColumnsModel(models.Model):
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    phone_code = models.CharField(
+    user_email = models.EmailField(max_length=100, unique=True)
+    user_phone_code = models.CharField(
         max_length=4, validators=[phone_code_validator], blank=True, null=True , default= "+254"
     )
-    first_name = models.CharField(max_length= 30, blank=True, null= True)
-    last_name = models.CharField(max_length = 30, blank= True, null= True)
-    avator = models.FileField(blank=True, null= True)
-    username = models.CharField(max_length = 128, unique =True,  default = 'admin')
+    user_first_name = models.CharField(max_length= 30, blank=True, null= True)
+    user_last_name = models.CharField(max_length = 30, blank= True, null= True)
+    user_avatar = models.FileField(blank=True, null= True)
+    username = models.CharField(max_length = 56,  unique=True,  default = 'admin')
     password = models.CharField(max_length=128, default='123456')
-    phone_number = models.CharField(
+    user_phone_number = models.CharField(
         max_length=10, validators=[phone_validator], blank=True, null=True, unique=True
     )
     USER_TYPES = [
@@ -46,6 +46,9 @@ class User(AbstractUser):
     ]
 
     user_type = models.CharField(max_length=20, choices=USER_TYPES,default='mechanic')
+
+    def __str__(self):
+        return self.username
 
 
 class ServiceType(models.Model):
@@ -122,21 +125,22 @@ class SubService(models.Model):
   
 
 class VehiclePart(models.Model):
-    name = models.CharField(max_length=255)
-    comments = models.TextField(blank=True, null=True)
-    working_condition = models.BooleanField(default=True)
-    service_type= models.ForeignKey(ServiceType, on_delete=models.SET_NULL, null=True)
+    vehicle_part_name = models.CharField(max_length=255)
+    vehicle_part_comments = models.TextField(blank=True, null=True)
+    vehicle_part_working_condition = models.BooleanField(default=True)
+    vehicle_part_sub_service= models.ForeignKey(SubService, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.name
+        return self.vehicle_part_name
 
 class VehicleService(models.Model):
-    next_service_date = models.DateTimeField()
-    previous_service_date = models.DateTimeField()
-    service = models.ForeignKey(VehiclePart, on_delete= models.CASCADE)
+    user =models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    vehicle_next_service_date = models.DateTimeField()
+    vehicle_previous_service_date = models.DateTimeField()
+    vehicle_service = models.ForeignKey(VehiclePart, on_delete= models.CASCADE)
 
     def __str__(self):
-        return f"VehicleService {self.service}"
+        return f"VehicleService {self.vehicle_service}"
 
 
 class Vehicle(models.Model):
@@ -148,24 +152,24 @@ class Vehicle(models.Model):
         ('unhealthy', 'Unhealthy'),
     ]
 
-    plate_number = models.CharField(max_length=255, unique=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    vehicle_plate_number = models.CharField(max_length=255, unique=True)
+    vehicle_owner = models.ForeignKey(User, on_delete=models.CASCADE)
     vehicle_parts = models.ForeignKey(VehiclePart, on_delete=models.CASCADE)
-    general_condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default=HEALTHY)
+    vehicle_general_condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default=HEALTHY)
     vehicle_type = models.CharField(max_length=40)
-    chassis_frame = models.CharField(max_length=255)
+    vehicle_chassis_frame = models.CharField(max_length=255)
     vehicle_model = models.CharField(max_length=255)
-    type = models.CharField(max_length=255)
-    body = models.CharField(max_length=255)
-    fuel = models.IntegerField()
-    engine_number = models.CharField(max_length=255, unique=True)
-    color = models.CharField(max_length=255)
-    reg_date = models.DateField()
-    gross_weight = models.IntegerField()
-    passengers = models.IntegerField()
-    tare_weight = models.CharField(max_length=255)
-    tax_class = models.CharField(max_length=255)
-    load_capacity = models.IntegerField()
+    vehicle_type = models.CharField(max_length=255)
+    vehicle_body = models.CharField(max_length=255)
+    vehicle_fuel_capacity= models.IntegerField()
+    vehicle_engine_number = models.CharField(max_length=255, unique=True)
+    vehicle_color = models.CharField(max_length=255)
+    vehicle_reg_date = models.DateField()
+    vehicle_gross_weight = models.IntegerField()
+    vehicle_passengers_capacity = models.IntegerField()
+    vehicle_tare_weight = models.CharField(max_length=255)
+    vehicle_tax_class = models.CharField(max_length=255)
+    vehicle_load_capacity = models.IntegerField()
 
     def __str__(self):
-        return f"{self.plate_number} - {self.vehicle_model}"
+        return f"{self. vehicle_plate_number} - {self.vehicle_model}"
