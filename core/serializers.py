@@ -21,7 +21,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'phone_code', 'phone_number', 'username', 'password', 
+        fields = ['id', 'user_email', 'user_phone_code', 'user_phone_number', 'username', 'password', 
                    'user_type']
         write_only_fields = ['password']
     
@@ -71,4 +71,36 @@ class SubServiceSerializer(serializers.ModelSerializer):
         service_type = validated_data.pop('service_type_id', None)
         service_type = super().update(instance, validated_data)
         return service_type
+
+class VehiclePartSerializer(serializers.ModelSerializer):
+    vehicle_part_sub_service= serializers.PrimaryKeyRelatedField(
+        write_only=True, queryset=SubService.objects.all(), required=False)
+    # vehicle_part_sub_service = SubServiceSerializer(read_only=True)
+    class Meta:
+        model = VehiclePart
+        fields = ['id', 'vehicle_part_sub_service', 'vehicle_part_name', 'vehicle_part_comments', 
+                  'vehicle_part_working_condition']
+        
+    def validate(self, data):
+        request = self.context.get("request", None)
+        if request is None:
+            raise serializers.ValidationError("Request object is invalid.")
+        user = request.user
+        # Check if the user is a not a mechanic
+        if user.user_type != "mechanic":
+            raise serializers.ValidationError("Only mechanics can inspect and write the report on vehicle wellbeing.")
+        return data
+        
     
+    def create(self, validated_data):
+        # Extract the sub_service_id from validated_data
+        vehicle_part_sub_service = validated_data.pop('vehicle_part_sub_service', None)
+        
+
+        vehicle_part = VehiclePart.objects.create(vehicle_part_sub_service=vehicle_part_sub_service, **validated_data)
+
+        return vehicle_part
+    # def update(self, instance, validated_data):
+
+    #     return super().update(instance, validated_data)
+
