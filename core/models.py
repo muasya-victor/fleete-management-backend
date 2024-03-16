@@ -135,12 +135,12 @@ class VehiclePart(models.Model):
 
 class VehicleService(models.Model):
     user =models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    vehicle_next_service_date = models.DateTimeField()
-    vehicle_previous_service_date = models.DateTimeField()
-    vehicle_service = models.ForeignKey(VehiclePart, on_delete= models.CASCADE)
+    vehicle_next_service_date = models.DateField()
+    vehicle_previous_service_date = models.DateField()
+    vehicle_part = models.ForeignKey(VehiclePart, on_delete= models.CASCADE)
 
     def __str__(self):
-        return f"VehicleService {self.vehicle_service}"
+        return f"VehicleService {self.vehicle_part}"
 
 
 class Vehicle(models.Model):

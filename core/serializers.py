@@ -70,7 +70,11 @@ class SubServiceSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         service_type = validated_data.pop('service_type_id', None)
         service_type = super().update(instance, validated_data)
-        return service_type
+        service_type.save()
+        if service_type is not None:
+            instance.service_type =service_type
+        instance.save()
+        return instance
 
 class VehiclePartSerializer(serializers.ModelSerializer):
     vehicle_part_sub_service= serializers.PrimaryKeyRelatedField(
@@ -100,7 +104,54 @@ class VehiclePartSerializer(serializers.ModelSerializer):
         vehicle_part = VehiclePart.objects.create(vehicle_part_sub_service=vehicle_part_sub_service, **validated_data)
 
         return vehicle_part
-    # def update(self, instance, validated_data):
+    
+    def update(self, instance, validated_data):
 
-    #     return super().update(instance, validated_data)
+        return super().update(instance, validated_data)
 
+class VehicleServiceSerializer(serializers.ModelSerializer):
+    # user = serializers.PrimaryKeyRelatedField(write_only= True, 
+            # queryset=User.objects.all(), required= False)
+    vehicle_part = serializers.PrimaryKeyRelatedField(write_only = True,
+                         queryset = VehiclePart.objects.all(), required = False)
+    class Meta:
+        model = VehicleService
+        fields = ['id',  'vehicle_next_service_date', 'vehicle_previous_service_date','vehicle_part']
+
+
+    def validate(self, data):
+        request =self.context.get('request', None)
+        vehicle_next_service_date = data.get('vehicle_next_service_date')
+        vehicle_previous_service_date = data.get('vehicle_previous_service_date')
+        if request is None:
+            raise serializers.ValidationError("Request object is invalid.")
+        user = request.user
+        current_date = timezone.now().date()
+            
+        if vehicle_next_service_date and vehicle_next_service_date <= current_date:
+            raise serializers.ValidationError('Next service date cannot be in the past or today.')
+        
+        if vehicle_previous_service_date and vehicle_previous_service_date >= current_date:
+            raise serializers.ValidationError('Previous service date cannot be in the future.')
+        
+        return data
+
+    def create(self, validated_data):
+        request = self.context.get("request", None)
+        if request is None:
+            raise serializers.ValidationError("Request object is invalid.")
+        user = request.user
+       
+        vehicle_part= validated_data.pop('vehicle_part', None)
+        vehicle_service = VehicleService.objects.create(vehicle_part=vehicle_part, **validated_data)
+
+        return vehicle_service
+    
+    def update(self, instance, validated_data):
+        vehicle_part = validated_data.pop('vehicle_part', None)
+        vehicle_service = super().update(instance, validated_data)
+        vehicle_service.save()
+        if vehicle_part is not None:
+            instance.vehicle_part = vehicle_part
+        instance.save()
+        return instance

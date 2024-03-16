@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from core.models import( User, VehicleService, ServiceType, SubService, VehiclePart)
 from core.serializers import ( CustomTokenObtainPairSerializer, UserSerializer,SubServiceSerializer,
-                              ServiceTypeSerializer, VehiclePartSerializer)
+                              ServiceTypeSerializer, VehiclePartSerializer, VehicleServiceSerializer)
 
 class CustomObtainTokenPairView(TokenObtainPairView):
     permission_classes = (AllowAny,)
@@ -73,3 +73,8 @@ class VehiclePartViewSet(viewsets.ModelViewSet):
         else:
             # Return an empty queryset for non-mechanics who are not superusers
             return VehiclePart.objects.none()
+
+class VehicleServiceViewSet(viewsets.ModelViewSet):
+    serializer_class= VehicleServiceSerializer
+    queryset = VehicleService.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
