@@ -21,7 +21,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'user_email', 'user_phone_code', 'user_phone_number', 'username', 'password', 
+        fields = ['id', 'user_first_name', 'user_last_name','user_email', 'user_phone_code', 'user_phone_number', 'username', 'password', 
                    'user_type']
         write_only_fields = ['password']
     
@@ -127,6 +127,9 @@ class VehicleServiceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Request object is invalid.")
         user = request.user
         current_date = timezone.now().date()
+
+        if user.user_type != 'mechanic':
+            raise serializers.ValidationError('only mechanics can service the vehicle')
             
         if vehicle_next_service_date and vehicle_next_service_date <= current_date:
             raise serializers.ValidationError('Next service date cannot be in the past or today.')
@@ -153,5 +156,42 @@ class VehicleServiceSerializer(serializers.ModelSerializer):
         vehicle_service.save()
         if vehicle_part is not None:
             instance.vehicle_part = vehicle_part
+        instance.save()
+        return instance
+
+class VehicleSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Vehicle
+        fields = ['id', 'vehicle_plate_number', 'vehicle_owner', 'vehicle_parts',
+                  'vehicle_general_condition', 'vehicle_type', 'vehicle_model',
+                  'vehicle_engine_number', 'vehicle_color']
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if request is None:
+            raise serializers.ValidationError("Request object is invalid.")
+        
+        user = request.user
+        
+        if user.user_type != 'mechanic':
+            raise serializers.ValidationError("Only mechanics can access this endpoint.")
+        print(user)
+
+        # Ensure the vehicle owner's user type is 'vehicle_owner'
+        vehicle_owner = data.get('vehicle_owner')
+        if vehicle_owner and vehicle_owner.user_type != 'vehicle_owner':
+            raise serializers.ValidationError("Vehicle owner must have user type 'vehicle_owner'.")
+        print(vehicle_owner)
+        return data
+
+    def create(self, validated_data):
+        vehicle = Vehicle.objects.create(**validated_data)
+        return vehicle
+    
+    def update(self, instance, validated_data):
+        vehicle = super().update(instance, validated_data)
+        vehicle.save()
+
         instance.save()
         return instance

@@ -157,19 +157,9 @@ class Vehicle(models.Model):
     vehicle_parts = models.ForeignKey(VehiclePart, on_delete=models.CASCADE)
     vehicle_general_condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default=HEALTHY)
     vehicle_type = models.CharField(max_length=40)
-    vehicle_chassis_frame = models.CharField(max_length=255)
     vehicle_model = models.CharField(max_length=255)
-    vehicle_type = models.CharField(max_length=255)
-    vehicle_body = models.CharField(max_length=255)
-    vehicle_fuel_capacity= models.IntegerField()
     vehicle_engine_number = models.CharField(max_length=255, unique=True)
     vehicle_color = models.CharField(max_length=255)
-    vehicle_reg_date = models.DateField()
-    vehicle_gross_weight = models.IntegerField()
-    vehicle_passengers_capacity = models.IntegerField()
-    vehicle_tare_weight = models.CharField(max_length=255)
-    vehicle_tax_class = models.CharField(max_length=255)
-    vehicle_load_capacity = models.IntegerField()
-
+    
     def __str__(self):
         return f"{self. vehicle_plate_number} - {self.vehicle_model}"
