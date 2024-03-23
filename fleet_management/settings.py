@@ -51,9 +51,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173','https://eugenefleet.netlify.app'
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -62,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'fleet_management.urls'
-CORS_ALLOW_ALL_ORIGINS = True
+
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Bearer': {
@@ -72,6 +77,8 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+
 
 TEMPLATES = [
     {
