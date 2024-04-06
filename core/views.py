@@ -113,14 +113,11 @@ class GeneratePDF(APIView):
         vehicle_serializer = VehicleSerializer(vehicles, many=True)
 
         # Create tables to display the serialized data
-        vehicle_data = [['Vehicle ID', 'Plate Number', 'Owner', 'Vehicle Parts',
+        vehicle_data = [[ 'Plate Number',
                          'Condition', 'Type', 'Model', 'Engine Number', 'Color']]
         for vehicle_data_item in vehicle_serializer.data:
             vehicle_data.append([
-                vehicle_data_item['id'],
                 vehicle_data_item['vehicle_plate_number'],
-                vehicle_data_item['vehicle_owner'],
-                vehicle_data_item['vehicle_parts'],
                 vehicle_data_item['vehicle_general_condition'],
                 vehicle_data_item['vehicle_type'],
                 vehicle_data_item['vehicle_model'],
@@ -136,7 +133,8 @@ class GeneratePDF(APIView):
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('BOX', (0, 0), (-1, -1), 1, colors.black),  # Add borders to the table
+            ('BOX', (0, 0), (-1, -1), 1, colors.black),
+            ('TABLEWIDTH', (0, 0), (-1, -1), '100%'),
         ])
 
         vehicle_table.setStyle(style)
