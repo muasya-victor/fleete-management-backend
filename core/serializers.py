@@ -21,7 +21,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'user_first_name', 'user_last_name', 'user_phone_code', 'user_phone_number', 'username', 'password', 
+        fields = ['id', 'user_first_name', 'user_last_name','user_email', 'user_phone_code', 'user_phone_number', 'username', 'password', 
                    'user_type']
         write_only_fields = ['password']
     
