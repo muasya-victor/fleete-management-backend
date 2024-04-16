@@ -51,6 +51,26 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.all()
         return user
     
+
+class CurrentUserViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.filter(id=user.id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+    
 class ServiceTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceTypeSerializer
     queryset = ServiceType.objects.all()
@@ -114,7 +134,7 @@ class GeneratePDF(APIView):
 
         # Create tables to display the serialized data
         vehicle_data = [[ 'Plate Number',
-                         'Condition', 'Type', 'Model', 'Engine Number', 'Color']]
+                         'Vehicle Status', 'Type', 'Model', 'Engine Number', 'Color']]
         for vehicle_data_item in vehicle_serializer.data:
             vehicle_data.append([
                 vehicle_data_item['vehicle_plate_number'],
